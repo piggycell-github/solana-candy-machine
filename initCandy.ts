@@ -11,6 +11,11 @@ import { uploadCandyMachineItems } from "./uploadItems";
 import dotenv from "dotenv";
 dotenv.config();
 
+// SOL 잔액을 포맷팅하는 함수 (identifier 제거)
+function formatSolBalance(basisPoints: number | bigint): string {
+  return `${Number(basisPoints) / 10 ** 9} SOL`;
+}
+
 async function main() {
   const solPaymentDestination = process.env.SOL_PAYMENT_DESTINATION;
   const collectionUri = process.env.COLLECTION_URI;
@@ -21,6 +26,7 @@ async function main() {
   const solPaymentAmount = process.env.SOL_PAYMENT_AMOUNT;
   const mintLimitPerAddress = process.env.MINT_LIMIT_PER_ADDRESS;
   const collectionCreatorAddress = process.env.COLLECTION_CREATOR_ADDRESS;
+  const mintingAmount = process.env.MINTING_AMOUNT;
 
   if (
     !solPaymentDestination ||
@@ -30,10 +36,11 @@ async function main() {
     !collectionSellerFeeBasisPoints ||
     !collectionCreatorAddress ||
     !solPaymentAmount ||
-    !mintLimitPerAddress
+    !mintLimitPerAddress ||
+    !mintingAmount
   ) {
     throw new Error(
-      "SOL_PAYMENT_DESTINATION or COLLECTION_URI or COLLECTION_NAME or COLLECTION_SYMBOL or COLLECTION_SELLER_FEE_BASIS_POINTS or SOL_PAYMENT_AMOUNT or MINT_LIMIT_PER_ADDRESS or COLLECTION_CREATOR_ADDRESS is not set"
+      "SOL_PAYMENT_DESTINATION or COLLECTION_URI or COLLECTION_NAME or COLLECTION_SYMBOL or COLLECTION_SELLER_FEE_BASIS_POINTS or SOL_PAYMENT_AMOUNT or MINT_LIMIT_PER_ADDRESS or COLLECTION_CREATOR_ADDRESS or MINTING_AMOUNT is not set"
     );
   }
 
@@ -42,6 +49,13 @@ async function main() {
   console.log("[candyMachineSigner]", candyMachineSigner.publicKey);
   console.log("[ownerSigner]", ownerSigner.publicKey);
   console.log("=================\n");
+
+  const beforeSolBalance = await umi.rpc.getBalance(umi.identity.publicKey);
+
+  console.log(
+    "[BEFORE SOL BALANCE]",
+    formatSolBalance(beforeSolBalance.basisPoints)
+  );
 
   await createNft(umi, {
     mint: mintSigner,
@@ -64,7 +78,7 @@ async function main() {
     collectionUpdateAuthority: umi.identity,
     tokenStandard: TokenStandard.NonFungible,
     sellerFeeBasisPoints: percentAmount(10, 2),
-    itemsAvailable: 10,
+    itemsAvailable: Number(mintingAmount),
     creators: [
       {
         address: publicKey(collectionCreatorAddress),
@@ -97,7 +111,24 @@ async function main() {
 
   console.log("[CANDY MACHINE CREATED]", candyMachineSigner.publicKey);
 
-  await uploadCandyMachineItems(candyMachineSigner.publicKey);
+  let offset = 0;
+
+  while (offset < Number(mintingAmount)) {
+    await uploadCandyMachineItems(candyMachineSigner.publicKey, offset);
+    offset += 10;
+  }
+
+  const afterSolBalance = await umi.rpc.getBalance(umi.identity.publicKey);
+
+  console.log(
+    "[AFTER SOL BALANCE]",
+    formatSolBalance(afterSolBalance.basisPoints)
+  );
+
+  console.log(
+    "[SOL BALANCE DIFF]",
+    formatSolBalance(beforeSolBalance.basisPoints - afterSolBalance.basisPoints)
+  );
 }
 
 main();
