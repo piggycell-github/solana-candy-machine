@@ -1,0 +1,24 @@
+{
+  "name": "solana-candy-machine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "candyInit.js",
+  "scripts": {
+    "generate-keys": "./generate_keys.sh",
+    "candy:init": "ts-node initCandy.ts",
+    "candy:mint": "ts-node mintCandy.ts",
+    "candy:checklimit": "ts-node checkMintLimit.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@metaplex-foundation/mpl-candy-machine": "^6.0.1",
+    "@metaplex-foundation/mpl-token-metadata": "3.2.1",
+    "@metaplex-foundation/mpl-toolbox": "0.9.4",
+    "@metaplex-foundation/umi": "0.8.10",
+    "@metaplex-foundation/umi-bundle-defaults": "0.8.10",
+    "@solana/web3.js": "1.98.0",
+    "bs58": "6.0.0",
+    "dotenv": "^16.4.7"
+  }
+}
