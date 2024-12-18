@@ -16,6 +16,10 @@ function formatSolBalance(basisPoints: number | bigint): string {
   return `${Number(basisPoints) / 10 ** 9} SOL`;
 }
 
+function getRunningTimeToSeconds(startTime: number): string {
+  return `${((Date.now() - startTime) / 1000).toFixed(2)}s`;
+}
+
 async function main() {
   const solPaymentDestination = process.env.SOL_PAYMENT_DESTINATION;
   const collectionUri = process.env.COLLECTION_URI;
@@ -51,6 +55,7 @@ async function main() {
   console.log("=================\n");
 
   const beforeSolBalance = await umi.rpc.getBalance(umi.identity.publicKey);
+  const startTime = Date.now();
 
   console.log(
     "[BEFORE SOL BALANCE]",
@@ -71,6 +76,7 @@ async function main() {
   }).sendAndConfirm(umi, { send: { commitment: "confirmed" } });
 
   console.log("[MINTED]", mintSigner.publicKey);
+  console.log("[MINTING TIME]", getRunningTimeToSeconds(startTime));
 
   const instruction = await create(umi, {
     candyMachine: candyMachineSigner,
@@ -95,6 +101,12 @@ async function main() {
         id: 1,
         limit: Number(mintLimitPerAddress),
       }),
+      startDate: some({
+        date: new Date("2024-12-18T06:00:00Z"),
+      }),
+      endDate: some({
+        date: new Date("2024-12-18T07:00:00Z"),
+      }),
     },
     configLineSettings: some({
       prefixName: "",
@@ -110,14 +122,21 @@ async function main() {
   });
 
   console.log("[CANDY MACHINE CREATED]", candyMachineSigner.publicKey);
-
+  console.log(
+    "[CANDY MACHINE CREATING TIME]",
+    getRunningTimeToSeconds(startTime)
+  );
   // sleep 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
   let offset = 0;
 
   while (offset < Number(mintingAmount)) {
-    console.log("Uploading items...", offset);
+    console.log(
+      "Uploading items...",
+      offset,
+      getRunningTimeToSeconds(startTime)
+    );
     await uploadCandyMachineItems(candyMachineSigner.publicKey, offset);
     offset += 10;
   }
@@ -133,6 +152,8 @@ async function main() {
     "[SOL BALANCE DIFF]",
     formatSolBalance(beforeSolBalance.basisPoints - afterSolBalance.basisPoints)
   );
+
+  console.log("[TOTAL TIME]", getRunningTimeToSeconds(startTime));
 }
 
 main();

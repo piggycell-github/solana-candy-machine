@@ -7,12 +7,11 @@ dotenv.config();
 async function withdrawRent() {
   try {
     // 렌트 출금 트랜잭션 실행
-    const withdrawTx = await deleteCandyMachine(umi, {
+    await deleteCandyMachine(umi, {
       candyMachine: candyMachineSigner.publicKey,
     }).sendAndConfirm(umi);
 
     console.log("렌트 출금이 완료되었습니다.");
-    console.log("트랜잭션 서명:", withdrawTx.signature);
   } catch (error) {
     console.error("렌트 출금 중 오류가 발생했습니다:", error);
   }
