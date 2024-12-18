@@ -68,7 +68,7 @@ async function main() {
       2
     ),
     isCollection: true,
-  }).sendAndConfirm(umi, { send: { commitment: "finalized" } });
+  }).sendAndConfirm(umi, { send: { commitment: "confirmed" } });
 
   console.log("[MINTED]", mintSigner.publicKey);
 
@@ -106,14 +106,18 @@ async function main() {
   });
 
   await instruction.sendAndConfirm(umi, {
-    send: { commitment: "finalized" },
+    send: { commitment: "confirmed" },
   });
 
   console.log("[CANDY MACHINE CREATED]", candyMachineSigner.publicKey);
 
+  // sleep 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   let offset = 0;
 
   while (offset < Number(mintingAmount)) {
+    console.log("Uploading items...", offset);
     await uploadCandyMachineItems(candyMachineSigner.publicKey, offset);
     offset += 10;
   }

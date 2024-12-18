@@ -13,12 +13,13 @@ export async function uploadCandyMachineItems(
 
   const instruction = await addConfigLines(umi, {
     candyMachine: publicKey(candyMachineAddress),
+    authority: umi.identity,
     index: offset,
     configLines,
   });
 
   await instruction.sendAndConfirm(umi, {
-    send: { commitment: "finalized" },
+    send: { commitment: "confirmed" },
   });
 
   console.log(

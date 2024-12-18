@@ -84,7 +84,7 @@ async function main() {
         },
       })
     )
-    .sendAndConfirm(umi, { send: { commitment: "finalized" } });
+    .sendAndConfirm(umi, { send: { commitment: "confirmed" } });
 
   console.log("[MINTED NFT]", nftMint.publicKey);
 }

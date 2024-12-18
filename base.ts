@@ -41,7 +41,9 @@ export function keypairConvert(keypair: Keypair) {
 }
 
 // Use the RPC endpoint of your choice.
-export const umi = createUmi(rpcUrl)
+export const umi = createUmi(rpcUrl, {
+  commitment: "confirmed",
+})
   .use(keypairIdentity(keypairConvert(ownerKeypair)))
   .use(mplCandyMachine());
 
