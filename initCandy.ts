@@ -102,10 +102,10 @@ async function main() {
         limit: Number(mintLimitPerAddress),
       }),
       startDate: some({
-        date: new Date("2024-12-18T06:00:00Z"),
+        date: new Date("2024-01-10T09:00:00Z"),
       }),
       endDate: some({
-        date: new Date("2024-12-18T07:00:00Z"),
+        date: new Date("2025-01-25T09:00:00Z"),
       }),
     },
     configLineSettings: some({

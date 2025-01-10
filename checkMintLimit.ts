@@ -1,10 +1,12 @@
 import {
+  fetchCandyGuard,
   fetchCandyMachine,
+  MintLimit,
   mplCandyMachine,
   safeFetchMintCounterFromSeeds,
 } from "@metaplex-foundation/mpl-candy-machine";
 import { candyMachineSigner, keypairConvert } from "./base";
-import { keypairIdentity } from "@metaplex-foundation/umi";
+import { keypairIdentity, Some } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -27,15 +29,21 @@ async function main() {
     umi,
     candyMachineSigner.publicKey
   );
+  const guard = await fetchCandyGuard(umi, candyMachine.mintAuthority);
 
   const mintCounter = await safeFetchMintCounterFromSeeds(umi, {
     id: 1,
     user: umi.identity.publicKey,
     candyMachine: candyMachine.publicKey,
-    candyGuard: candyMachine.mintAuthority,
+    candyGuard: guard.publicKey,
   });
 
-  console.log(mintCounter);
+  console.log("mintCounter", mintCounter);
+
+  console.log(
+    "mintLimit",
+    (guard.guards.mintLimit as Some<MintLimit>).value.limit
+  );
 }
 
 main();
