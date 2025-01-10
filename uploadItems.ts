@@ -15,7 +15,7 @@ export async function uploadCandyMachineItems(
 
   const configLines = Array.from({ length: 10 }, (_, i) => ({
     name: `${baseName} #${offset + i + 1}`,
-    uri: `${baseUrl}${i + 1}.json`,
+    uri: `${baseUrl}${offset + i + 1}.json`,
   }));
 
   const instruction = await addConfigLines(umi, {
