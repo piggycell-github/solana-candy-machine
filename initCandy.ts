@@ -83,7 +83,7 @@ async function main() {
     collectionMint: mintSigner.publicKey,
     collectionUpdateAuthority: umi.identity,
     tokenStandard: TokenStandard.NonFungible,
-    sellerFeeBasisPoints: percentAmount(10, 2),
+    sellerFeeBasisPoints: percentAmount(5, 2),
     itemsAvailable: Number(mintingAmount),
     creators: [
       {
