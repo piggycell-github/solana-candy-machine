@@ -6,6 +6,9 @@ import {
 import { percentAmount, publicKey, sol, some } from "@metaplex-foundation/umi";
 import { candyMachineSigner, mintSigner, ownerSigner, umi } from "./base";
 import { uploadCandyMachineItems } from "./uploadItems";
+import { TransactionLogger } from "./src/utils/TransactionLogger";
+import { TransactionCategory } from "./src/types/transaction";
+import bs58 from "bs58";
 
 // dotenv
 import dotenv from "dotenv";
@@ -21,6 +24,8 @@ function getRunningTimeToSeconds(startTime: number): string {
 }
 
 async function main() {
+  const logger = TransactionLogger.getInstance();
+
   const solPaymentDestination = process.env.SOL_PAYMENT_DESTINATION;
   const collectionUri = process.env.COLLECTION_URI;
   const collectionName = process.env.COLLECTION_NAME;
@@ -62,7 +67,7 @@ async function main() {
     formatSolBalance(beforeSolBalance.basisPoints)
   );
 
-  await createNft(umi, {
+  const nftCollectionTx = await createNft(umi, {
     mint: mintSigner,
     authority: umi.identity,
     name: collectionName,
@@ -74,6 +79,20 @@ async function main() {
     ),
     isCollection: true,
   }).sendAndConfirm(umi, { send: { commitment: "confirmed" } });
+
+  await logger.logTransaction({
+    timestamp: new Date().toISOString(),
+    category: TransactionCategory.NFT_COLLECTION_CREATE,
+    transaction_hash: bs58.encode(nftCollectionTx.signature),
+    amount_sol:
+      Number(
+        beforeSolBalance.basisPoints -
+          (
+            await umi.rpc.getBalance(umi.identity.publicKey)
+          ).basisPoints
+      ) / 1e9,
+    status: "SUCCESS",
+  });
 
   console.log("[MINTED]", mintSigner.publicKey);
   console.log("[MINTING TIME]", getRunningTimeToSeconds(startTime));
@@ -117,8 +136,22 @@ async function main() {
     }),
   });
 
-  await instruction.sendAndConfirm(umi, {
+  const candyMachineTx = await instruction.sendAndConfirm(umi, {
     send: { commitment: "confirmed" },
+  });
+
+  await logger.logTransaction({
+    timestamp: new Date().toISOString(),
+    category: TransactionCategory.CANDY_MACHINE_CREATE,
+    transaction_hash: bs58.encode(candyMachineTx.signature),
+    amount_sol:
+      Number(
+        beforeSolBalance.basisPoints -
+          (
+            await umi.rpc.getBalance(umi.identity.publicKey)
+          ).basisPoints
+      ) / 1e9,
+    status: "SUCCESS",
   });
 
   console.log("[CANDY MACHINE CREATED]", candyMachineSigner.publicKey);
@@ -154,6 +187,8 @@ async function main() {
   );
 
   console.log("[TOTAL TIME]", getRunningTimeToSeconds(startTime));
+
+  await logger.printTotalCosts();
 }
 
 main();
