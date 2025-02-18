@@ -124,7 +124,7 @@ async function main() {
         date: new Date("2024-01-10T09:00:00Z"),
       }),
       endDate: some({
-        date: new Date("2025-01-25T09:00:00Z"),
+        date: new Date("2026-01-25T09:00:00Z"),
       }),
     },
     configLineSettings: some({
