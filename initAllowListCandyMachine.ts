@@ -75,10 +75,10 @@ async function main() {
         limit: Number(mintLimitPerAddress),
       }),
       startDate: some({
-        date: new Date("2024-01-10T09:00:00Z"),
+        date: new Date("2024-02-20T04:30:00Z"),
       }),
       endDate: some({
-        date: new Date("2026-01-25T09:00:00Z"),
+        date: new Date("2026-02-20T07:00:00Z"),
       }),
       allowList: some({
         merkleRoot: merkleRoot,

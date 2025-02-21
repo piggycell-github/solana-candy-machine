@@ -63,10 +63,10 @@ async function main() {
         limit: Number(mintLimitPerAddress),
       }),
       startDate: some({
-        date: new Date("2024-02-18T08:00:00Z"),
+        date: new Date("2024-02-20T06:20:00Z"),
       }),
       endDate: some({
-        date: new Date("2026-01-25T09:00:00Z"),
+        date: new Date("2026-02-20T07:30:00Z"),
       }),
     },
     configLineSettings: some({
@@ -105,6 +105,7 @@ async function main() {
   // sleep 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
+  const shift = 1000;
   let offset = 0;
 
   while (offset < Number(mintingAmount)) {
@@ -113,7 +114,7 @@ async function main() {
       offset,
       getRunningTimeToSeconds(startTime)
     );
-    await uploadCandyMachineItems(candyMachineSigner.publicKey, offset);
+    await uploadCandyMachineItems(candyMachineSigner.publicKey, offset, shift);
     offset += 10;
   }
 

@@ -7,7 +7,8 @@ import bs58 from "bs58";
 
 export async function uploadCandyMachineItems(
   candyMachineAddress: string,
-  offset = 0
+  offset = 0,
+  shift = 0
 ) {
   const logger = TransactionLogger.getInstance();
 
@@ -20,8 +21,8 @@ export async function uploadCandyMachineItems(
   }
 
   const configLines = Array.from({ length: 10 }, (_, i) => ({
-    name: `${baseName} #${offset + i + 1}`,
-    uri: `${baseUrl}${offset + i + 1}.json`,
+    name: `${baseName} #${offset + i + 1 + shift}`,
+    uri: `${baseUrl}${offset + i + 1 + shift}.json`,
   }));
 
   const instruction = await addConfigLines(umi, {
