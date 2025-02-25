@@ -63,10 +63,14 @@ async function main() {
         limit: Number(mintLimitPerAddress),
       }),
       startDate: some({
-        date: new Date("2024-02-20T06:20:00Z"),
+        // UTC: 2025-02-27 07:00:00
+        // KST: 2025-02-27 16:00:00
+        date: new Date("2025-02-27T07:00:00Z"),
       }),
       endDate: some({
-        date: new Date("2026-02-20T07:30:00Z"),
+        // UTC: 2025-03-01 07:00:00
+        // KST: 2025-03-01 16:00:00
+        date: new Date("2025-03-01T07:00:00Z"),
       }),
     },
     configLineSettings: some({
